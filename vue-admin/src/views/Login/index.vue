@@ -21,7 +21,10 @@
         class="login-form"
         size="medium"
       >
-        <el-form-item prop="username" class="item-from">
+        <el-form-item
+          prop="username"
+          class="item-from"
+        >
           <label>邮箱</label>
           <el-input
             type="text"
@@ -30,7 +33,10 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item prop="password" class="item-from">
+        <el-form-item
+          prop="password"
+          class="item-from"
+        >
           <label>密码</label>
           <el-input
             type="password"
@@ -56,7 +62,10 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item prop="code" class="item-from">
+        <el-form-item
+          prop="code"
+          class="item-from"
+        >
           <label>验证码</label>
           <el-row :gutter="11">
             <el-col :span="15">
@@ -67,7 +76,10 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block">获取验证码</el-button>
+              <el-button
+                type="success"
+                class="block"
+              >获取验证码</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -76,8 +88,7 @@
             type="danger"
             @click="submitForm('ruleForm')"
             class="login-btn block"
-            >提交</el-button
-          >
+          >提交</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -90,86 +101,85 @@ import {
   validateEmail,
   validatepass,
   validateVcode
-} from '@/utils/validate'
+} from "@/utils/validate";
 export default {
-  name: 'login',
+  name: "login",
   //将你的数据绑定在这里,然后你好在template中调用
   // 表单
   data() {
     //验证邮箱
     var validateusername = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入用户名'))
+      if (value === "") {
+        callback(new Error("请输入用户名"));
       } else if (validateEmail(value)) {
-        callback(new Error('用户名格式有误'))
+        callback(new Error("用户名格式有误"));
       } else {
-        callback() //true
+        callback(); //true
       }
-    }
+    };
     //验证密码
     var validatepassword = (rule, value, callback) => {
-      this.ruleForm.password = stripscript(value)
-      value = this.ruleForm.password
-      if (value === '') {
-        callback(new Error('请输入密码'))
+      this.ruleForm.password = stripscript(value);
+      value = this.ruleForm.password;
+      if (value === "") {
+        callback(new Error("请输入密码"));
       } else if (validatepass(value)) {
-        callback(new Error('以字母开头，长度在6~18之间数字或字母'))
+        callback(new Error("以字母开头，长度在6~18之间数字或字母"));
       } else {
-        callback()
+        if (this.ruleForm.passwords !== "") {
+          this.$refs.ruleForm.validateField("passwords");
+        }
+        callback();
       }
-    }
+    };
     //验证确认密码
     var validatepasswords = (rule, value, callback) => {
       //若干模块值为login，直接通过
-      if (this.model === 'login') {
-        callback()
+      if (this.model === "login") {
+        callback();
       }
-      this.ruleForm.passwords = stripscript(value)
-      value = this.ruleForm.passwords
-
-      if (value === '') {
-        callback(new Error('请再次密码'))
+      this.ruleForm.passwords = stripscript(value);
+      value = this.ruleForm.passwords;
+      if (value === "") {
+        callback(new Error("请再次输入密码"));
       } else if (value != this.ruleForm.password) {
-        callback(new Error('重复密码不正确'))
+        callback(new Error("重复密码不正确"));
       } else {
-        callback()
+        callback();
       }
-    }
-
+    };
     //验证验证码
     var validatecode = (rule, value, callback) => {
-      if (value === '') {
-        return callback(new Error('验证码不能为空'))
+      if (value === "") {
+        return callback(new Error("验证码不能为空"));
       } else if (validateVcode(value)) {
-        return callback(new Error('验证码格式有误'))
+        return callback(new Error("验证码格式有误"));
       } else {
-        callback()
+        callback();
       }
-    }
+    };
     // 登陆注册
-
     return {
       menuTab: [
-        { text: '登陆', current: true, type: 'login' },
-        { text: '注册', current: false, type: 'register' }
+        { text: "登陆", current: true, type: "login" },
+        { text: "注册", current: false, type: "register" }
       ],
-
       //模块的值
-      model: 'login',
+      model: "login",
       //表单的数据
       ruleForm: {
-        username: '',
-        password: '',
-        passwords: '',
-        code: ''
+        username: "",
+        password: "",
+        passwords: "",
+        code: ""
       },
       rules: {
-        username: [{ validator: validateusername, trigger: 'blur' }],
-        password: [{ validator: validatepassword, trigger: 'blur' }],
-        passwords: [{ validator: validatepasswords, trigger: 'blur' }],
-        code: [{ validator: validatecode, trigger: 'blur' }]
+        username: [{ validator: validateusername, trigger: "blur" }],
+        password: [{ validator: validatepassword, trigger: "blur" }],
+        passwords: [{ validator: validatepasswords, trigger: "blur" }],
+        code: [{ validator: validatecode, trigger: "blur" }]
       }
-    }
+    };
   },
   created() {},
   mounted() {},
@@ -178,26 +188,29 @@ export default {
     //vue是数据驱动视图渲染
     toggleMneu(data) {
       this.menuTab.forEach(elem => {
-        elem.current = false
-      })
+        elem.current = false;
+      });
       //高光
-      data.current = true
+      data.current = true;
       //修改模块值
-      this.model = data.type
+      this.model = data.type;
     },
     // 表单
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          alert('submit!')
+          alert("submit!");
         } else {
-          console.log('error submit!!')
-          return false
+          console.log("error submit!!");
+          return false;
         }
-      })
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
     }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 //全局样式
@@ -220,7 +233,7 @@ export default {
     width: 88px;
     line-height: 36px;
     font-size: 14px;
-    font-family: '萝莉体 第二版';
+    font-family: "萝莉体 第二版";
     color: rgb(226, 226, 226);
     //使其圆润
     border-radius: 10px;
@@ -240,7 +253,7 @@ export default {
     display: block;
     margin-bottom: 3px;
     font-size: 14px;
-    font-family: '萝莉体 第二版';
+    font-family: "萝莉体 第二版";
     color: rgb(226, 226, 226);
   }
   .item-from {
