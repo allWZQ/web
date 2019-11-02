@@ -67,7 +67,9 @@
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block">获取验证码</el-button>
+              <el-button type="success" class="block" @click="getSms()"
+                >获取验证码</el-button
+              >
             </el-col>
           </el-row>
         </el-form-item>
@@ -85,6 +87,7 @@
 </template>
 <script>
 // 引用外部方法
+import { GetSms } from "@/api/login.js";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
@@ -94,7 +97,7 @@ import {
 } from "@/utils/validate";
 export default {
   name: "login",
-  //将你的数据绑定在这里,然后你好在template中调用
+  //将你的数据绑定在这里,然后你在template中调用
   setup(props, { refs }) {
     // 表单
     //验证邮箱
@@ -148,15 +151,13 @@ export default {
         callback();
       }
     };
-
-    //s声明数据
+    //声明数据
     const menuTab = reactive([
       { text: "登陆", current: true, type: "login" },
       { text: "注册", current: false, type: "register" }
     ]);
     //模块值
     const model = ref("login");
-
     //表单的数据
     const ruleForm = reactive({
       username: "",
@@ -171,7 +172,6 @@ export default {
       passwords: [{ validator: validatepasswords, trigger: "blur" }],
       code: [{ validator: validatecode, trigger: "blur" }]
     });
-
     //声明函数
     //vue是数据驱动视图渲染
     const toggleMneu = data => {
@@ -182,6 +182,10 @@ export default {
       data.current = true;
       //修改模块值
       model.value = data.type;
+    };
+    // 获取验证码
+    const getSms = () => {
+      GetSms({ username: ruleForm.username });
     };
     // 表单
     const submitForm = formName => {
@@ -197,7 +201,6 @@ export default {
     const resetForm = formName => {
       refs[formName].resetFields();
     };
-
     //挂载完成后
     onMounted(() => {});
     return {
@@ -207,7 +210,8 @@ export default {
       submitForm,
       resetForm,
       ruleForm,
-      rules
+      rules,
+      getSms
     };
   }
 };
