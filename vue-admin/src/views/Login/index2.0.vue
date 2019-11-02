@@ -85,7 +85,6 @@
 </template>
 <script>
 // 引用外部方法
-import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
   validateEmail,
@@ -95,50 +94,6 @@ import {
 export default {
   name: "login",
   //将你的数据绑定在这里,然后你好在template中调用
-  setup(props, context) {
-    const menuTab = reactive([
-      { text: "登陆", current: true, type: "login" },
-      { text: "注册", current: false, type: "register" }
-    ]);
-    //模块值
-    const model = ref("login");
-
-    //声明函数
-    //vue是数据驱动视图渲染
-    const toggleMneu = data => {
-      this.menuTab.forEach(elem => {
-        elem.current = false;
-      });
-      //高光
-      data.current = true;
-      //修改模块值
-      this.model = data.type;
-    };
-    // 表单
-    const submitForm = formName => {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    };
-    const resetForm = formName => {
-      this.$refs[formName].resetFields();
-    };
-
-    //挂载完成后
-    onMounted(() => {});
-    return {
-      menuTab,
-      model,
-      toggleMneu,
-      submitForm,
-      resetForm
-    };
-  },
   // 表单
   data() {
     //验证邮箱
@@ -194,6 +149,10 @@ export default {
     };
     // 登陆注册
     return {
+      menuTab: [
+        { text: "登陆", current: true, type: "login" },
+        { text: "注册", current: false, type: "register" }
+      ],
       //模块的值
       model: "login",
       //表单的数据
@@ -210,6 +169,35 @@ export default {
         code: [{ validator: validatecode, trigger: "blur" }]
       }
     };
+  },
+  created() {},
+  mounted() {},
+  //写函数的地方
+  methods: {
+    //vue是数据驱动视图渲染
+    toggleMneu(data) {
+      this.menuTab.forEach(elem => {
+        elem.current = false;
+      });
+      //高光
+      data.current = true;
+      //修改模块值
+      this.model = data.type;
+    },
+    // 表单
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          alert("submit!");
+        } else {
+          console.log("error submit!!");
+          return false;
+        }
+      });
+    },
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+    }
   }
 };
 </script>
