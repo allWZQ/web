@@ -85,7 +85,7 @@
 </template>
 <script>
 // 引用外部方法
-import { reactive, ref, onMounted } from "@vue/composition-api";
+import { reactive, ref, isRef, toRefs, onMounted } from "@vue/composition-api";
 import {
   stripscript,
   validateEmail,
@@ -106,13 +106,13 @@ export default {
     //声明函数
     //vue是数据驱动视图渲染
     const toggleMneu = data => {
-      this.menuTab.forEach(elem => {
+      menuTab.forEach(elem => {
         elem.current = false;
       });
       //高光
       data.current = true;
       //修改模块值
-      this.model = data.type;
+      model.value = data.type;
     };
     // 表单
     const submitForm = formName => {
