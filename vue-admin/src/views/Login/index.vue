@@ -7,7 +7,7 @@
           v-for="item in menuTab"
           :key="item.id"
           :class="{ current: item.current }"
-          @click="toggleMneu(item)"
+          @click="toggleMenu(item)"
         >
           {{ item.text }}
         </li>
@@ -17,13 +17,14 @@
         :model="ruleForm"
         status-icon
         :rules="rules"
-        ref="ruleForm"
+        ref="Form"
         class="login-form"
         size="medium"
       >
         <el-form-item prop="username" class="item-from">
-          <label>邮箱</label>
+          <label for="username">邮箱</label>
           <el-input
+            id="username"
             type="text"
             v-model="ruleForm.username"
             autocomplete="off"
@@ -31,8 +32,9 @@
         </el-form-item>
 
         <el-form-item prop="password" class="item-from">
-          <label>密码</label>
+          <label for="password">密码</label>
           <el-input
+            id="password"
             type="password"
             v-model="ruleForm.password"
             autocomplete="off"
@@ -46,8 +48,9 @@
           class="item-from"
           v-show="model === 'register'"
         >
-          <label>确认密码</label>
+          <label for="passwords">确认密码</label>
           <el-input
+            id="passwords"
             type="password"
             v-model="ruleForm.passwords"
             autocomplete="off"
@@ -57,18 +60,23 @@
         </el-form-item>
 
         <el-form-item prop="code" class="item-from">
-          <label>验证码</label>
+          <label for="code">验证码</label>
           <el-row :gutter="11">
             <el-col :span="15">
               <el-input
+                id="code"
                 v-model.number="ruleForm.code"
                 minlength="6"
                 maxlength="6"
               ></el-input>
             </el-col>
             <el-col :span="9">
-              <el-button type="success" class="block" @click="getSms()"
-                >获取验证码</el-button
+              <el-button
+                type="success"
+                class="block"
+                @click="getSms()"
+                :disabled="codeButtonStatus.status"
+                >{{ codeButtonStatus.text }}</el-button
               >
             </el-col>
           </el-row>
@@ -76,9 +84,10 @@
         <el-form-item>
           <el-button
             type="danger"
+            :disabled="loginButtonStatus"
             @click="submitForm('ruleForm')"
             class="login-btn block"
-            >提交</el-button
+            >{{ model === "login" ? "登陆" : "注册" }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -98,7 +107,16 @@ import {
 export default {
   name: "login",
   //将你的数据绑定在这里,然后你在template中调用
-  setup(props, { refs }) {
+  //setup（props,context）
+  /**
+  attrs:(...)==this.$attrs
+  emit:(...)==this.$emit
+  listeners:(...)==this.$listeners
+  parent:(...)==this.parent
+  refs:(...)==this.refs
+  root:(...)==this
+*/
+  setup(props, { refs, root }) {
     // 表单
     //验证邮箱
     let validateusername = (rule, value, callback) => {
@@ -127,7 +145,7 @@ export default {
     };
     //验证确认密码
     let validatepasswords = (rule, value, callback) => {
-      //若干模块值为login，直接通过
+      //若模块值为login，直接通过
       if (model.value === "login") {
         callback();
       }
@@ -158,6 +176,17 @@ export default {
     ]);
     //模块值
     const model = ref("login");
+    //登陆按钮禁用状态
+    const loginButtonStatus = ref(true);
+    //验证码按钮状态
+    const codeButtonStatus = reactive({
+      //验证码按钮禁用状态
+      status: false,
+      //验证码的文本状态
+      text: "获取验证码"
+    });
+    //倒计时
+    const timer = ref(null);
     //表单的数据
     const ruleForm = reactive({
       username: "",
@@ -174,7 +203,7 @@ export default {
     });
     //声明函数
     //vue是数据驱动视图渲染
-    const toggleMneu = data => {
+    const toggleMenu = data => {
       menuTab.forEach(elem => {
         elem.current = false;
       });
@@ -182,10 +211,51 @@ export default {
       data.current = true;
       //修改模块值
       model.value = data.type;
+      //重置表单
+      //this.$refs[formName].resetFields();  2.0写法
+      refs.Form.resetFields();
     };
-    // 获取验证码
+    // 获取验证码接口
     const getSms = () => {
-      GetSms({ username: ruleForm.username });
+      //前端拦截提示
+      //邮箱是否为空
+      if (ruleForm.username == "") {
+        root.$message.error("请填写您的邮箱!");
+        return false;
+      }
+      //邮箱格式是否正确真实
+      if (validateEmail(ruleForm.username)) {
+        root.$message.error("请填写正确邮箱格式!");
+        return false;
+      }
+      //请求的接口,获取验证码
+      let requestData = {
+        username: ruleForm.username,
+        module: model.value
+      };
+      //修改获取验证码状态
+      codeButtonStatus.status = true;
+      codeButtonStatus.text = "已发送";
+      //延时多长时间
+      setTimeout(() => {
+        //获取验证码后台接口结果判断
+        GetSms(requestData)
+          .then(response => {
+            let data = response.data;
+            root.$message({
+              message: data.message,
+              type: "success"
+            });
+            //启用登陆或注册按钮
+            loginButtonStatus.value = false;
+            //调定时器，倒计时
+            countDown(5);
+            console.log(data);
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }, 2000);
     };
     // 表单
     const submitForm = formName => {
@@ -198,17 +268,34 @@ export default {
         }
       });
     };
-    const resetForm = formName => {
-      refs[formName].resetFields();
+    //倒计时
+    const countDown = number => {
+      //BUG：0，60没有
+      //setInterval 不断的执行，需要条件才会停止
+      let time = number;
+      timer.value = setInterval(() => {
+        time--;
+        console.log(time);
+        if (time === 0) {
+          //setInterval 定时器清除
+          clearInterval(timer.value);
+          codeButtonStatus.status = false;
+          codeButtonStatus.text = "重新发送";
+        } else {
+          codeButtonStatus.text = `倒计时${time}秒`;
+        }
+      }, 1000);
     };
+    //生命周期
     //挂载完成后
     onMounted(() => {});
     return {
       menuTab,
       model,
-      toggleMneu,
+      loginButtonStatus,
+      codeButtonStatus,
+      toggleMenu,
       submitForm,
-      resetForm,
       ruleForm,
       rules,
       getSms
