@@ -65,7 +65,7 @@
             <el-col :span="15">
               <el-input
                 id="code"
-                v-model.number="ruleForm.code"
+                v-model="ruleForm.code"
                 minlength="6"
                 maxlength="6"
               ></el-input>
@@ -85,7 +85,7 @@
           <el-button
             type="danger"
             :disabled="loginButtonStatus"
-            @click="submitForm('ruleForm')"
+            @click="submitForm('Form')"
             class="login-btn block"
             >{{ model === "login" ? "登陆" : "注册" }}</el-button
           >
@@ -96,7 +96,8 @@
 </template>
 <script>
 // 引用外部方法
-import { GetSms } from "@/api/login.js";
+import { Message } from "element-ui";
+import { GetSms, Register, Login } from "@/api/login.js";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
@@ -138,7 +139,7 @@ export default {
         callback(new Error("以字母开头，长度在6~18之间数字或字母"));
       } else {
         if (ruleForm.passwords !== "") {
-          refs.ruleForm.validateField("passwords");
+          refs.Form.validateField("passwords");
         }
         callback();
       }
@@ -257,20 +258,65 @@ export default {
           });
       }, 2000);
     };
-    // 表单
+    // 提交表单
     const submitForm = formName => {
       refs[formName].validate(valid => {
+        //表单验证通过
         if (valid) {
-          alert("submit!");
+          model.value === "login" ? login() : register();
         } else {
           console.log("error submit!!");
           return false;
         }
       });
     };
+    //登陆
+    const login = () => {
+      let requestData = {
+        username: ruleForm.username,
+        password: ruleForm.password,
+        code: ruleForm.code
+      };
+      Login(requestData)
+        .then(response => {
+          console.log("登陆结果");
+          console.log(response);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
+    //注册
+    const register = () => {
+      let requestData = {
+        username: ruleForm.username,
+        password: ruleForm.password,
+        code: ruleForm.code,
+        module: model.value
+      };
+      //注册的接口
+      Register(requestData)
+        .then(response => {
+          let data = response.data;
+          root.$message({
+            message: data.message,
+            type: "success"
+          });
+          //注册成功后
+          toggleMenu(menuTab[0]);
+          clearCountDown();
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    };
     //倒计时
     const countDown = number => {
-      //BUG：0，60没有
+      //遗留BUG：0，60没有
+      //判断是否存在别的定时器，存在则清除
+      if (timer.value) {
+        clearInterval(timer.value);
+      }
       //setInterval 不断的执行，需要条件才会停止
       let time = number;
       timer.value = setInterval(() => {
@@ -285,6 +331,14 @@ export default {
           codeButtonStatus.text = `倒计时${time}秒`;
         }
       }, 1000);
+    };
+    //清除倒计时定时器
+    const clearCountDown = () => {
+      //还原验证码状态
+      codeButtonStatus.status = false;
+      codeButtonStatus.text = "获取验证码";
+      //清除倒计时
+      clearInterval(timer.value);
     };
     //生命周期
     //挂载完成后

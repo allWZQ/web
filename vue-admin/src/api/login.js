@@ -12,6 +12,20 @@ export function GetSms(data) {
 }
 //获取用户角色
 
-//登陆
+//获取登陆的接口
+export function Login(data) {
+  return service.request({
+    method: "post",
+    url: "/Login/",
+    data: data
+  });
+}
 
-//注册
+//获取注册的接口
+export function Register(data) {
+  return service.request({
+    method: "post",
+    url: "/register/",
+    data: data
+  });
+}
