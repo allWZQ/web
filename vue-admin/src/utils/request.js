@@ -11,9 +11,18 @@ const service = axios.create({
 });
 
 // 添加请求拦截器
+/**
+ * 请求接口前，做一些数据处理
+ */
+
 service.interceptors.request.use(
   function(config) {
     // 在发送请求之前做些什么
+    //后台需要前端这边添加相关的参数（在request Headers添加东西）
+    //最终目的是在请求头添加参数
+    //tokey  ：config.header.tokey="2222"
+    //userId  config.header.userId="22222"
+    //sui     config.header.sui="222222"
     return config;
   },
   function(error) {
@@ -23,10 +32,14 @@ service.interceptors.request.use(
 );
 
 // 添加响应拦截器
+/**
+ * 请求接口后，后台返回什么数据进行拦截
+ */
 service.interceptors.response.use(
   function(response) {
     // 对响应数据做点什么
     let data = response.data;
+    //业务需求
     if (data.resCode !== 0) {
       //error()里面添加的内容是后台服务器返回给我们的，我们不能写死了
       Message.error(data.message);

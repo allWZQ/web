@@ -16,7 +16,7 @@ export function GetSms(data) {
 export function Login(data) {
   return service.request({
     method: "post",
-    url: "/Login/",
+    url: "/login/",
     data: data
   });
 }

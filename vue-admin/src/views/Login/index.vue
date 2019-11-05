@@ -96,6 +96,7 @@
 </template>
 <script>
 // 引用外部方法
+import sha1 from "js-sha1";
 import { Message } from "element-ui";
 import { GetSms, Register, Login } from "@/api/login.js";
 import { reactive, ref, onMounted } from "@vue/composition-api";
@@ -202,6 +203,7 @@ export default {
       passwords: [{ validator: validatepasswords, trigger: "blur" }],
       code: [{ validator: validatecode, trigger: "blur" }]
     });
+    //不建议在一个方法里，放入过多的事件,尽量把相同的事情封装一个方法里面，然后通过调用函数进行执行
     //声明函数
     //vue是数据驱动视图渲染
     const toggleMenu = data => {
@@ -212,9 +214,19 @@ export default {
       data.current = true;
       //修改模块值
       model.value = data.type;
+      resetFromData();
+      clearCountDown();
+    };
+    //清除表单数据方法
+    const resetFromData = () => {
       //重置表单
       //this.$refs[formName].resetFields();  2.0写法
       refs.Form.resetFields();
+    };
+    //更新按钮状态方法
+    const updataButtonStatus = parameter => {
+      codeButtonStatus.status = parameter.status;
+      codeButtonStatus.text = parameter.text;
     };
     // 获取验证码接口
     const getSms = () => {
@@ -235,8 +247,10 @@ export default {
         module: model.value
       };
       //修改获取验证码状态
-      codeButtonStatus.status = true;
-      codeButtonStatus.text = "已发送";
+      updataButtonStatus({
+        status: true,
+        text: "已发送"
+      });
       //延时多长时间
       setTimeout(() => {
         //获取验证码后台接口结果判断
@@ -274,13 +288,22 @@ export default {
     const login = () => {
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.code
       };
       Login(requestData)
         .then(response => {
-          console.log("登陆结果");
+          console.log("登陆成功");
           console.log(response);
+          //路由的页面跳转
+          root.$router.push({
+            name: "Console"
+            //传参
+            // params:{
+            //   id:"",
+            //   user:""
+            // }
+          });
         })
         .catch(error => {
           console.log(error);
@@ -290,7 +313,7 @@ export default {
     const register = () => {
       let requestData = {
         username: ruleForm.username,
-        password: ruleForm.password,
+        password: sha1(ruleForm.password),
         code: ruleForm.code,
         module: model.value
       };
@@ -325,8 +348,10 @@ export default {
         if (time === 0) {
           //setInterval 定时器清除
           clearInterval(timer.value);
-          codeButtonStatus.status = false;
-          codeButtonStatus.text = "重新发送";
+          updataButtonStatus({
+            status: false,
+            text: "重新发送"
+          });
         } else {
           codeButtonStatus.text = `倒计时${time}秒`;
         }
@@ -335,8 +360,10 @@ export default {
     //清除倒计时定时器
     const clearCountDown = () => {
       //还原验证码状态
-      codeButtonStatus.status = false;
-      codeButtonStatus.text = "获取验证码";
+      updataButtonStatus({
+        status: false,
+        text: "获取验证码"
+      });
       //清除倒计时
       clearInterval(timer.value);
     };
