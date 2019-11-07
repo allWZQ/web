@@ -402,3 +402,11 @@ template {
 [hidden] {
     display: none;
 }
+
+.clearfix:after {
+    content: " ";
+    display: block;
+    height: 0px;
+    visibility: hidden;
+    clear: both;
+}
