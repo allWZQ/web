@@ -7,11 +7,15 @@ import store from "./store";
 //UI引入
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
+//icon引入
+import "./icons";
+
 Vue.use(ElementUI);
 Vue.use(VueCompositionApi);
 
 Vue.config.productionTip = false;
 
+//runtime(运行模式)
 new Vue({
   router,
   store,
