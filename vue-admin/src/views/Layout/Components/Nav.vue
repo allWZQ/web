@@ -1,5 +1,6 @@
 <template>
   <div id="nav-wrap">
+    <h1 class="logo"><img src="../../../assets/logo.png" alt="" /></h1>
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
@@ -15,7 +16,7 @@
         <el-submenu v-if="!item.hidden" :key="item.id" :index="index + ''">
           <!-- 一级菜单 -->
           <template slot="title">
-            <i :class="item.meta.icon"></i>
+            <svg-icon :iconClass="item.meta.icon" :className="item.meta.icon" />
             <span slot="title">{{ item.meta.name }}</span>
           </template>
           <!-- 子级菜单 -->
@@ -28,7 +29,6 @@
           >
         </el-submenu>
       </template>
-      <svg-icon />
     </el-menu>
   </div>
 </template>
@@ -41,7 +41,6 @@ export default {
     const isCollapse = ref(false);
     const routers = reactive(root.$router.options.routes);
     console.log(routers);
-
     //函数方法
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);
@@ -61,6 +60,13 @@ export default {
 </script>
 <style lang="scss" scoped>
 @import "../../../styles/config.scss";
+.logo {
+  text-align: center;
+  img {
+    margin: 28px auto 25px;
+    width: 92px;
+  }
+}
 #nav-wrap {
   //固定的
   position: fixed;
@@ -69,5 +75,8 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: rgb(0, 67, 105);
+  svg {
+    margin-right: 10px;
+  }
 }
 </style>

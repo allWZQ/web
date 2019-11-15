@@ -1,7 +1,10 @@
 <template>
   <div id="main-wrap">
-    <router-view />
-    内容
+    <div class="main-content">
+      <div class="content">
+        <router-view />
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -17,6 +20,17 @@ export default {};
   bottom: 0px;
   border: 30px solid #f7f7f7;
   border-bottom: none;
-  -webkit-box-sizing: border;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.content {
+  width: 100%;
+  height: 100%;
+  padding: 30px 30px 0px 30;
+  padding-top: 30px;
+  padding-left: 30px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  background-color: #fff;
 }
 </style>

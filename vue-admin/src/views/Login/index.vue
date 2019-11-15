@@ -179,6 +179,7 @@ export default {
     //模块值
     const model = ref("login");
     //登陆按钮禁用状态
+
     const loginButtonStatus = ref(true);
     //验证码按钮状态
     const codeButtonStatus = reactive({
@@ -399,6 +400,7 @@ export default {
 //登陆注册按钮
 .menu {
   border: 1px solid red;
+  text-align: center;
   li {
     text-align: center;
     display: inline-block;

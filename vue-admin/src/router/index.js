@@ -28,7 +28,7 @@ const routes = [
     redirect: "index",
     meta: {
       name: "控制台",
-      icon: "el-icon-s-tools"
+      icon: "kzt"
     },
     component: Layout,
     children: [
@@ -48,7 +48,7 @@ const routes = [
     name: "Info",
     meta: {
       name: "信息管理",
-      icon: "el-icon-menu"
+      icon: "menu"
     },
     component: Layout,
     children: [
@@ -76,7 +76,7 @@ const routes = [
     name: "User",
     meta: {
       name: "用户管理",
-      icon: "el-icon-user-solid"
+      icon: "user"
     },
     component: Layout,
     children: [
