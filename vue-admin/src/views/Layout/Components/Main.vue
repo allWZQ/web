@@ -2,35 +2,54 @@
   <div id="main-wrap">
     <div class="main-content">
       <div class="content">
+        {{ bbb }}
         <router-view />
       </div>
     </div>
   </div>
 </template>
 <script>
-export default {};
+import { ref } from "@vue/composition-api";
+export default {
+  name: "LayoutMain",
+  setup(props, { root }) {
+    const bbb = root.$store.state.login.aaa;
+    return {
+      bbb
+    };
+  }
+};
 </script>
 <style lang="scss" scoped>
 @import "../../../styles/config.scss";
 #main-wrap {
-  position: fixed;
-  left: $navMenu;
-  top: 75px;
-  right: 0px;
-  bottom: 0px;
-  border: 30px solid #f7f7f7;
-  border-bottom: none;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+  height: 100vh;
 }
+.main-content {
+  width: 100%;
+  height: 100%;
+  padding-top: $layoutHeader + 30;
+  padding-right: 30px;
+  @include webkit(box-sizing, border-box);
+  @include webkit(transition, all 0.3s ease 0s);
+  background-color: rgb(250, 250, 250);
+}
+.open {
+  .main-content {
+    padding-left: $navMenu + 30;
+  }
+}
+.close {
+  .main-content {
+    padding-left: $navMenuMin + 30;
+  }
+}
+
 .content {
   width: 100%;
   height: 100%;
   padding: 30px 30px 0px 30;
-  padding-top: 30px;
-  padding-left: 30px;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
+  @include webkit(box-sizing, border-box);
   background-color: #fff;
 }
 </style>

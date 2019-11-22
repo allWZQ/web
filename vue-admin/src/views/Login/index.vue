@@ -292,7 +292,8 @@ export default {
         password: sha1(ruleForm.password),
         code: ruleForm.code
       };
-      Login(requestData)
+      root.$store
+        .dispatch("login", requestData)
         .then(response => {
           console.log("登陆成功");
           console.log(response);
@@ -309,6 +310,23 @@ export default {
         .catch(error => {
           console.log(error);
         });
+      // Login(requestData)
+      //   .then(response => {
+      //     console.log("登陆成功");
+      //     console.log(response);
+      //     //路由的页面跳转
+      //     root.$router.push({
+      //       name: "Console"
+      //       //传参
+      //       // params:{
+      //       //   id:"",
+      //       //   user:""
+      //       // }
+      //     });
+      //   })
+      //   .catch(error => {
+      //     console.log(error);
+      //   });
     };
     //注册
     const register = () => {

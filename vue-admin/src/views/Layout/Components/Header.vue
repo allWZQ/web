@@ -36,6 +36,17 @@ export default {
   //阴影x，y轴的长度 ,大小，扩展， 颜色以及透明度
   -webkit-box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.1);
   line-height: 75px;
+  @include webkit(transition, all 0.3s ease 0s);
+}
+.open {
+  #header-wrap {
+    left: $navMenu;
+  }
+}
+.close {
+  #header-wrap {
+    left: $navMenuMin;
+  }
 }
 .header-icon {
   padding: 0 32px;

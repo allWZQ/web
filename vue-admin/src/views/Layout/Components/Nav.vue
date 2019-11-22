@@ -4,8 +4,6 @@
     <el-menu
       default-active="1-4-1"
       class="el-menu-vertical-demo"
-      @open="handleOpen"
-      @close="handleClose"
       :collapse="isCollapse"
       background-color="transparent"
       text-color="#fff"
@@ -33,27 +31,25 @@
   </div>
 </template>
 <script>
-import { reactive, ref, onMounted, isRef, toRefs } from "@vue/composition-api";
+import {
+  reactive,
+  ref,
+  onMounted,
+  isRef,
+  toRefs,
+  computed
+} from "@vue/composition-api";
 export default {
   name: "navMenu",
   setup(props, { root }) {
     //data数组 数据
-    const isCollapse = ref(false);
     const routers = reactive(root.$router.options.routes);
+    //computed 监听
+    const isCollapse = computed(() => root.$store.state.app.isCollapse);
     console.log(routers);
-    //函数方法
-    const handleOpen = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-    const handleClose = (key, keyPath) => {
-      console.log(key, keyPath);
-    };
-
     return {
       isCollapse,
-      routers,
-      handleOpen,
-      handleClose
+      routers
     };
   }
 };
@@ -65,6 +61,7 @@ export default {
   img {
     margin: 28px auto 25px;
     width: 92px;
+    @include webkit(transition, all 0.3s ease 0s);
   }
 }
 #nav-wrap {
@@ -75,8 +72,23 @@ export default {
   width: $navMenu;
   height: 100vh;
   background-color: rgb(0, 67, 105);
+  //动画缓冲，美化过度
+  @include webkit(transition, all 0.3s ease 0s);
   svg {
     margin-right: 10px;
+  }
+}
+.open {
+  #nav-wrap {
+    width: $navMenu;
+  }
+}
+.close {
+  #nav-wrap {
+    width: $navMenuMin;
+  }
+  .logo img {
+    width: 50px;
   }
 }
 </style>
