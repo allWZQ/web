@@ -2,7 +2,6 @@
   <div id="main-wrap">
     <div class="main-content">
       <div class="content">
-        {{ bbb }}
         <router-view />
       </div>
     </div>
@@ -12,12 +11,7 @@
 import { ref } from "@vue/composition-api";
 export default {
   name: "LayoutMain",
-  setup(props, { root }) {
-    const bbb = root.$store.state.login.aaa;
-    return {
-      bbb
-    };
-  }
+  setup(props, { root }) {}
 };
 </script>
 <style lang="scss" scoped>

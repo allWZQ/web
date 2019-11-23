@@ -8,6 +8,8 @@ import store from "./store/index.js";
 import ElementUI from "element-ui";
 import Router from "vue-router";
 import "element-ui/lib/theme-chalk/index.css";
+//引入token
+import "./router/housekeeper";
 //icon引入
 import "./icons";
 //解决UI vue3.1.0报错

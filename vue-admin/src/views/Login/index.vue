@@ -97,8 +97,7 @@
 <script>
 // 引用外部方法
 import sha1 from "js-sha1";
-import { Message } from "element-ui";
-import { GetSms, Register, Login } from "@/api/login.js";
+import { GetSms, Register } from "@/api/login.js";
 import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
@@ -293,7 +292,7 @@ export default {
         code: ruleForm.code
       };
       root.$store
-        .dispatch("login", requestData)
+        .dispatch("app/login", requestData)
         .then(response => {
           console.log("登陆成功");
           console.log(response);
