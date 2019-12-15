@@ -12,16 +12,20 @@ import "element-ui/lib/theme-chalk/index.css";
 import "./router/housekeeper";
 //icon引入
 import "./icons";
+//自定义全局方法
+//import global from "./utils/global";
+//自定义全局组件
+//Vue.use(global);
+Vue.use(ElementUI);
+Vue.use(VueCompositionApi);
+
+Vue.config.productionTip = false;
+
 //解决UI vue3.1.0报错
 const originalPush = Router.prototype.push;
 Router.prototype.push = function push(location) {
   return originalPush.call(this, location).catch(err => err);
 };
-
-Vue.use(ElementUI);
-Vue.use(VueCompositionApi);
-
-Vue.config.productionTip = false;
 
 //runtime(运行模式)
 new Vue({

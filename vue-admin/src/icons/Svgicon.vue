@@ -42,8 +42,8 @@ export default {
 </script>
 <style lang="scss" scoped>
 .svg-icon {
-  width: 22px;
-  height: 22px;
+  width: 1em;
+  height: 1em;
   fill: currentColor;
 }
 </style>

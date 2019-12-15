@@ -18,3 +18,6 @@ export function setUserName(value) {
 export function getUserName() {
   return Cookie.get(usernamekey);
 }
+export function removeUserNmae() {
+  return Cookie.remove(usernamekey);
+}

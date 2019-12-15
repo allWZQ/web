@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Message } from "element-ui";
+import { getToken, getUserName } from "../utils/app";
 
 //创建axios，赋给变量service
 const BASEURL = process.env.NODE_ENV === "production" ? "" : "/devApi";
@@ -9,7 +10,6 @@ const service = axios.create({
   //网络请求接口，假设 5000
   //timeout尽量超过请求的时间
 });
-
 // 添加请求拦截器
 /**
  * 请求接口前，做一些数据处理
@@ -18,10 +18,10 @@ const service = axios.create({
 service.interceptors.request.use(
   function(config) {
     // 在发送请求之前做些什么
-    //后台需要前端这边添加相关的参数（在request Headers添加东西）
+    //后台需要前端这边添加相关的参数（在request Headers 请求头添加东西）
     //最终目的是在请求头添加参数
-    //tokey  ：config.header.tokey="2222"
-    //userId  config.header.userId="22222"
+    config.headers["Tokey"] = getToken();
+    config.headers["UserName"] = getUserName();
     //sui     config.header.sui="222222"
     return config;
   },

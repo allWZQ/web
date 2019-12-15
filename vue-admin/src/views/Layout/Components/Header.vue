@@ -36,9 +36,10 @@ export default {
   left: $navMenu;
   height: 75px;
   background-color: rgb(255, 255, 255);
-  //阴影x，y轴的长度 ,大小，扩展， 颜色以及透明度
-  -webkit-box-shadow: 0px 3px 16px 0px rgba(0, 0, 0, 0.1);
+
   line-height: 75px;
+  //阴影x，y轴的长度 ,大小，扩展， 颜色以及透明度
+  @include webkit(box-shadow, 0 3px 16px 0 rgba(0, 0, 0, 0.1));
   @include webkit(transition, all 0.3s ease 0s);
 }
 .open {

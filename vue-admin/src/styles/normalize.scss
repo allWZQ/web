@@ -7,6 +7,7 @@
  * 1. Correct the line height in all browsers.
  * 2. Prevent adjustments of font size after orientation changes in iOS.
  */
+//div的默认样式不存在padding和margin为0的情况
 html,
 body,
 div,
@@ -92,7 +93,7 @@ video {
     padding: 0;
     border: 0;
     font-size: 100%;
-    font: inherit;
+    //font: inherit;
     vertical-align: baseline;
 }
 
@@ -128,7 +129,7 @@ html {
 body {
     margin: 0;
     font-family: 'Microsoft YaHei';
-    font-size: 14px;
+    font-size: 15px;
 }
 
 /**
