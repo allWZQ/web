@@ -69,7 +69,6 @@ export default {
   position: fixed;
   left: 0px;
   top: 0px;
-  width: $navMenu;
   height: 100vh;
   background-color: rgb(0, 67, 105);
   //动画缓冲，美化过度

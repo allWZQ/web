@@ -30,6 +30,7 @@ export default {
 <style lang="scss" scoped>
 @import "../../../styles/config.scss";
 #header-wrap {
+  z-index: 1000;
   position: fixed;
   top: 0px;
   right: 0px;

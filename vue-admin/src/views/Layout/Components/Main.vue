@@ -18,6 +18,7 @@ export default {
 @import "../../../styles/config.scss";
 #main-wrap {
   height: 100vh;
+  background-color: rgb(250, 250, 250);
 }
 .main-content {
   width: 100%;
@@ -26,7 +27,6 @@ export default {
   padding-right: 30px;
   @include webkit(box-sizing, border-box);
   @include webkit(transition, all 0.3s ease 0s);
-  background-color: rgb(250, 250, 250);
 }
 .open {
   .main-content {

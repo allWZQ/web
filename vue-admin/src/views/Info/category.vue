@@ -88,17 +88,17 @@
   </div>
 </template>
 <script>
-import {
-  AddFirstCategory,
-  GetCategory,
-  DeleteCategory,
-  EditCategory
-} from "../../api/news";
+import { AddFirstCategory, DeleteCategory, EditCategory } from "../../api/news";
 import { global } from "@/utils/globalV3";
 import { reactive, ref, onMounted, watch } from "@vue/composition-api";
+import { common } from "../../api/common.js";
 export default {
   name: "category",
   setup(props, { root }) {
+    //数据调用
+    //获取
+    const { categoryItem, getInfoCategory } = common();
+
     //数据
     const form = reactive({ categoryName: "", secCategoryName: "" });
     const category = reactive({
@@ -171,15 +171,7 @@ export default {
           form.secCategoryName = "";
         });
     };
-    //获取
-    const getCategory = () => {
-      GetCategory({})
-        .then(response => {
-          let data = response.data.data.data;
-          category.item = data;
-        })
-        .catch(error => {});
-    };
+
     //删除
     const deleteCategoryComfirm = categoryID => {
       deleteId.value = categoryID;
@@ -260,9 +252,15 @@ export default {
         })
         .catch(error => {});
     };
+    watch(
+      () => categoryItem.item,
+      value => {
+        category.item = value;
+      }
+    );
     //dom挂载完成的时候执行
     onMounted(() => {
-      getCategory();
+      getInfoCategory();
     });
     return {
       form,

@@ -12,10 +12,10 @@
               style="width:100%;"
             >
               <el-option
-                v-for="item in options"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
+                v-for="item in options.category"
+                :key="item.id"
+                :label="item.category_name"
+                :value="item.id"
               >
               </el-option>
             </el-select>
@@ -79,15 +79,16 @@
     </el-row>
     <div class="black-space-30"></div>
     <!-- 表格数据 -->
-    <el-table :data="tableData" border style="width: 100%">
+    <el-table :data="tableData.item" border style="width: 100%">
       <el-table-column type="selection" width="45"> </el-table-column>
       <el-table-column prop="title" label="标题" width="830"></el-table-column>
       <el-table-column
-        prop="category"
+        prop="categoryId"
         label="类型"
         width="130"
       ></el-table-column>
-      <el-table-column prop="date" label="日期" width="240"> </el-table-column>
+      <el-table-column prop="createDate" label="日期" width="240">
+      </el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -115,45 +116,38 @@
           :current-page="1"
           :page-sizes="[10, 20, 50, 100]"
           layout="total,sizes,prev, pager, next"
-          :total="1000"
+          :total="total"
         >
         </el-pagination>
       </el-col>
     </el-row>
     <!-- 新增弹窗 -->
-    <dialogInfo :flog.sync="dialogInfo" @close="closeDialog" />
+    <dialogInfo
+      :flog.sync="dialogInfo"
+      @close="closeDialog"
+      :category="options.category"
+    />
   </div>
 </template>
 <script>
+import { GetList } from "../../api/news.js";
 import DialogInfo from "../Info/dialog/info";
 import { global } from "@/utils/globalV3";
-import { reactive, ref, watch } from "@vue/composition-api";
+//import { common } from "../../api/common.js";
+import { reactive, ref, watch, onMounted } from "@vue/composition-api";
 export default {
   name: "index",
   components: {
     DialogInfo
   },
-  setup() {
+  setup(props, { root }) {
     //声明调用方法
     const { str, confirm } = global();
-    watch(str, () => {
-      console.log(str.value);
-    });
+    //const { categoryItem, getInfoCategory } = common();
 
-    const options = reactive([
-      {
-        value: 1,
-        label: "海绵宝宝"
-      },
-      {
-        value: 2,
-        label: "派大星"
-      },
-      {
-        value: 3,
-        label: "章鱼哥"
-      }
-    ]);
+    const options = reactive({
+      category: []
+    });
     //声明标题数据
     const categoryValue = ref("");
     const dateValue = ref("");
@@ -164,40 +158,47 @@ export default {
     ]);
     const search = ref("");
     //声明表格数据
-    const tableData = reactive([
-      {
-        title: "找派大星玩",
-        category: "海底",
-        date: "2019-12-4",
-        user: "海绵宝宝"
-      },
-      {
-        title: "找海绵宝宝玩",
-        category: "海底",
-        date: "2019-12-4",
-        user: "派大星"
-      },
-      {
-        title: "洗泡泡浴",
-        category: "海底",
-        date: "2019-12-4",
-        user: "章鱼哥"
-      },
-      {
-        title: "坐着数钱",
-        category: "海底",
-        date: "2019-12-4",
-        user: "蟹老板"
-      }
-    ]);
+    const tableData = reactive({
+      item: []
+    });
+    //分页
+    const total = ref(0);
+    //yema
+    const page = reactive({
+      pageNumber: 1,
+      pageSize: 10
+    });
     //声明弹窗按钮
     const dialogInfo = ref(false);
     //方法
+    //获取列表
+    const getList = () => {
+      let requestData = {
+        categoryId: "",
+        startTiem: "",
+        endTime: "",
+        title: "",
+        id: "",
+        pageNumber: page.pageNumber,
+        pageSize: page.pageSize
+      };
+      GetList(requestData)
+        .then(response => {
+          console.log(response.data.data.data);
+          tableData.item = response.data.data.data;
+          total.value = response.data.data.total;
+        })
+        .catch(error => {});
+    };
     const handleSizeChange = val => {
+      page.pageSize = val;
       console.log(`每页 ${val} 条`);
+      getList();
     };
     const handleCurrentChange = val => {
+      page.pageNumber = val;
       console.log(`当前页: ${val}`);
+      getList();
     };
     const closeDialog = () => {
       //回调（可以用来做逻辑性事件）
@@ -212,7 +213,6 @@ export default {
         fn: confirmDelete,
         id: "1"
       });
-
       // root.confirm({
       //   content: "此操作将永久删除该条信息, 是否继续?",
       //   Tips: "警告",
@@ -234,7 +234,30 @@ export default {
       //   fn: confirmDelete
       // });
     };
+    //监听
+    watch(str, () => {
+      console.log(str.value);
+    });
+    //vue3.0
+    // watch(
+    //   () => categoryItem.item,
+    //   value => {
+    //     options.category = value;
+    //   }
+    // );
     const confirmDelete = () => {};
+    const getInfoCategory = () => {
+      root.$store.dispatch("common/getInfoCategory").then(response => {
+        options.category = response;
+      });
+    };
+    //获取接口
+    onMounted(() => {
+      //获取分类
+      getInfoCategory();
+      //获取列表
+      getList();
+    });
     return {
       options,
       categoryValue,
@@ -249,7 +272,9 @@ export default {
       closeDialog,
       deleteItem,
       deleteAll,
-      confirmDelete
+      confirmDelete,
+      total,
+      page
     };
   }
 };
