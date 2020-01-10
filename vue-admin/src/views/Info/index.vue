@@ -79,15 +79,26 @@
     </el-row>
     <div class="black-space-30"></div>
     <!-- 表格数据 -->
-    <el-table :data="tableData.item" border style="width: 100%">
+    <el-table
+      :data="tableData.item"
+      v-loading="loadingData"
+      border
+      style="width: 100%"
+    >
       <el-table-column type="selection" width="45"> </el-table-column>
       <el-table-column prop="title" label="标题" width="830"></el-table-column>
       <el-table-column
         prop="categoryId"
         label="类型"
         width="130"
+        :formatter="toCategory"
       ></el-table-column>
-      <el-table-column prop="createDate" label="日期" width="240">
+      <el-table-column
+        prop="createDate"
+        label="日期"
+        width="240"
+        :formatter="toData"
+      >
       </el-table-column>
       <el-table-column prop="user" label="管理员" width="115"></el-table-column>
       <el-table-column label="操作">
@@ -135,6 +146,7 @@ import DialogInfo from "../Info/dialog/info";
 import { global } from "@/utils/globalV3";
 //import { common } from "../../api/common.js";
 import { reactive, ref, watch, onMounted } from "@vue/composition-api";
+import { timestampToTime } from "../../utils/common.js";
 export default {
   name: "index",
   components: {
@@ -163,6 +175,8 @@ export default {
     });
     //分页
     const total = ref(0);
+    //分页loading
+    const loadingData = ref(true);
     //yema
     const page = reactive({
       pageNumber: 1,
@@ -182,13 +196,19 @@ export default {
         pageNumber: page.pageNumber,
         pageSize: page.pageSize
       };
+      //loading加载状态
+      loadingData.value = true;
       GetList(requestData)
         .then(response => {
           console.log(response.data.data.data);
           tableData.item = response.data.data.data;
           total.value = response.data.data.total;
+          //loading加载状态
+          loadingData.value = false;
         })
-        .catch(error => {});
+        .catch(error => {
+          loadingData.value = false;
+        });
     };
     const handleSizeChange = val => {
       page.pageSize = val;
@@ -251,6 +271,16 @@ export default {
         options.category = response;
       });
     };
+    const toData = row => {
+      return timestampToTime(row.createDate);
+    };
+    const toCategory = row => {
+      let categoryId = row.categoryId;
+      let categoryData = options.category.filter(
+        value => value.id == categoryId
+      )[0];
+      return categoryData.category_name;
+    };
     //获取接口
     onMounted(() => {
       //获取分类
@@ -274,7 +304,10 @@ export default {
       deleteAll,
       confirmDelete,
       total,
-      page
+      page,
+      loadingData,
+      toData,
+      toCategory
     };
   }
 };
